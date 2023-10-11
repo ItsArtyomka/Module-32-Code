@@ -52,21 +52,21 @@ public class LoggingFilter extends OncePerRequestFilter {
     }
 
     protected void beforeRequest(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response) {
-        if (logger.isInfoEnabled()){
+        if (logger.isInfoEnabled()) {
             logRequestHeader(request, request.getRemoteAddr() + "|>");
         }
     }
 
     protected void afterRequest(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response) {
-        if (logger.isInfoEnabled()){
+        if (logger.isInfoEnabled()) {
             logRequestBody(request, request.getRemoteAddr() + "|>");
             logResponse(response, request.getRemoteAddr() + "|>");
         }
     }
 
-    private static void logRequestHeader(ContentCachingRequestWrapper request, String prefix){
+    private static void logRequestHeader(ContentCachingRequestWrapper request, String prefix) {
         String queryString = request.getQueryString();
-        if (queryString == null){
+        if (queryString == null) {
             logger.info("{} {} {}", prefix, request.getMethod(), request.getRequestURI());
         } else {
             logger.info("{} {} {}?{}", prefix, request.getMethod(), request.getRequestURI(), queryString);
@@ -86,23 +86,23 @@ public class LoggingFilter extends OncePerRequestFilter {
         }
     }
 
-    private static void logResponse(ContentCachingResponseWrapper response, String prefix){
+    private static void logResponse(ContentCachingResponseWrapper response, String prefix) {
         int status = response.getStatus();
         logger.info("{} {} {}", prefix, status, HttpStatus.valueOf(status).getReasonPhrase());
         response.getHeaderNames().forEach(header -> {
-            response.getHeaders(header).forEach(headerValue ->{
+            response.getHeaders(header).forEach(headerValue -> {
                 logger.info("{} {} {}", prefix, header, headerValue);
             });
         });
         logger.info("{}", prefix);
         byte[] content = response.getContentAsByteArray();
-        if (content.length > 0){
+        if (content.length > 0) {
             logContent(content, response.getContentType(), response.getCharacterEncoding(), prefix);
         }
     }
 
-    private static void logContent(byte[] content, String contentType, String contentEncoding, String prefix){
-        MediaType  mediaType = MediaType.valueOf(contentType);
+    private static void logContent(byte[] content, String contentType, String contentEncoding, String prefix) {
+        MediaType mediaType = MediaType.valueOf(contentType);
         boolean visible = VISIBLE_TYPES.stream().anyMatch(visibleType -> visibleType.includes(mediaType));
         if (visible) {
             try {
@@ -125,6 +125,7 @@ public class LoggingFilter extends OncePerRequestFilter {
             return new ContentCachingRequestWrapper(httpServletRequest);
         }
     }
+
     private static ContentCachingResponseWrapper wrapResponse(HttpServletResponse httpServletResponse) {
         if (httpServletResponse instanceof ContentCachingResponseWrapper) {
             return (ContentCachingResponseWrapper) httpServletResponse;
